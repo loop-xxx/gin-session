@@ -40,7 +40,7 @@ func (g *GinSession)Set(key string, value string){
 
 func (g *GinSession)SetStruct(key string, value interface{})(err error){
 	if bytes, marshalErr := json.Marshal(value); marshalErr == nil{
-		g.Set(key, bytes)
+		g.Set(key, string(bytes))
 	}else{
 		err = marshalErr
 	}
