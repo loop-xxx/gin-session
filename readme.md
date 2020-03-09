@@ -1,6 +1,7 @@
 #### gin-session
 
 * gin-session 一个为gin框架开发的session中间件, 使用redis储存数据, 并且底层维护了一个cache, 大量减小了对redis的读操作 。
+* gin-session 保证请求前和请求后, session数据的一致性和完整性, 不保证请求执行过程中数据实时同步。
 
 ##### 安装
 
@@ -10,11 +11,9 @@ go get github.com/loop-xxx/gin-session
 
 ##### 架构
 
-![00](./img/00.PNG)
+![00](https://github.com/loop-xxx/gin-session/blob/master/img/00.jpg)
 
-
-
-![01](./img/01.PNG)
+![01](https://github.com/loop-xxx/gin-session/blob/master/img/01.jpg)
 
 ##### 流程
 
