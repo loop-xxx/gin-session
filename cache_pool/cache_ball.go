@@ -88,7 +88,7 @@ func (cnp *CacheBall) _syncOut() (success bool) {
 	return
 }
 
-func (cnp *CacheBall) SetAndCommit(dataMap map[string]string) (success bool) {
+func (cnp *CacheBall) Commit(dataMap map[string]string) (success bool) {
 	//生成数据当前版本的magic
 
 	magicInt64 := time.Now().UnixNano()
@@ -124,6 +124,5 @@ func MakeCacheBall(key string, keeper dao.Keeper, expiration time.Duration) (cac
 		magic:      "none", //default magic
 		dataMap:    nil,
 	}
-
 	return
 }
