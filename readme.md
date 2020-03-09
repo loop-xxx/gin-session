@@ -11,10 +11,10 @@ go get github.com/loop-xxx/gin-session
 
 ##### 架构
 
-![00](https://github.com/loop-xxx/gin-session/blob/master/img/00.jpg)
+![00](https://static.studygolang.com/200309/7bf99dfcdeee15f48aebd3772394c6bc.jpg)
 
 
-![01](https://github.com/loop-xxx/gin-session/blob/master/img/01.jpg)
+![01](https://static.studygolang.com/200309/5d7523befbd26ae332b4cb9ef3da7b5a.jpg)
 ##### 流程
 
 ```go
