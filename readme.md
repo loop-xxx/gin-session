@@ -10,11 +10,11 @@ go get github.com/loop-xxx/gin-session
 
 ##### 架构
 
-![00](./img/00.PNG)
+![00](https://github.com/loop-xxx/gin-session/blob/master/img/00.jpg)
 
 
 
-![01](./img/01.PNG)
+![01](https://github.com/loop-xxx/gin-session/blob/master/img/00.jpg)
 
 ##### 流程
 
