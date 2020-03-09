@@ -14,7 +14,7 @@ go get github.com/loop-xxx/gin-session
 
 
 
-![image-20200309173547517](./img/01.PNG)
+![01](./img/01.PNG)
 
 ##### 流程
 
