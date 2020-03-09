@@ -1,4 +1,4 @@
-package cache_pool
+package cache
 
 import (
 	"fmt"

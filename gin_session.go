@@ -1,4 +1,4 @@
-package gin_session
+package session
 
 import (
 	"encoding/json"

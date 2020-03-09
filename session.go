@@ -1,4 +1,4 @@
-package gin_session
+package session
 
 //Session 接口
 type Session interface{

@@ -1,9 +1,9 @@
-package gin_session
+package session
 
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"github.com/loop-xxx/gin-session/cache_pool"
+	"github.com/loop-xxx/gin-session/cache"
 	"github.com/loop-xxx/gin-session/dao"
 	uuid "github.com/satori/go.uuid"
 	"time"
@@ -22,10 +22,10 @@ func DefaultGinSessionManager(keeper dao.Keeper, domain string)func (*gin.Contex
 
 func GinSessionManager(keeper dao.Keeper, domain string,
 	expiration time.Duration, poolMaxSize, sessionMapInitSize int)func (*gin.Context){
-	pool := cache_pool.NewCachePool(poolMaxSize)
+	pool := cache.NewCachePool(poolMaxSize)
 	return func(ctx *gin.Context){
 		var data map[string]string
-		var ball *cache_pool.CacheBall
+		var ball *cache.CacheBall
 
 		//1 获取请求携带的session
 		if token, err := ctx.Cookie("gin-session-id"); err == nil{
@@ -35,7 +35,7 @@ func GinSessionManager(keeper dao.Keeper, domain string,
 			}else{
 				//3 如果未找到则创建新的ball, 并将其交给pool拓展
 				//该token对应cache ball已经被lru算法移除, 为该token创建新的cache bool并托管到cache pool
-				ball = cache_pool.MakeCacheBall(fmt.Sprintf("gin-session:%s", token), keeper, expiration)
+				ball = cache.MakeCacheBall(fmt.Sprintf("gin-session:%s", token), keeper, expiration)
 				pool.AppendCacheBall(token, ball)
 			}
 
@@ -56,7 +56,7 @@ func GinSessionManager(keeper dao.Keeper, domain string,
 			// 如果本次请求是用户端第一次请求该网站那么拿不到token, 需要为用户创建新的token
 			token := uuid.NewV4().String()
 			//为新token创建新的cache bool并托管到cache pool
-			ball = cache_pool.MakeCacheBall(fmt.Sprintf("gin-session:%s", token), keeper, expiration)
+			ball = cache.MakeCacheBall(fmt.Sprintf("gin-session:%s", token), keeper, expiration)
 			pool.AppendCacheBall(token, ball)
 
 			//设置客户端的session-id
