@@ -10,7 +10,7 @@ import (
 )
 
 func GinSessionManager(keeper dao.Keeper, cookieMaxAge int, domain string,
-	expiration time.Duration, poolMaxSize, sessionInitSize int)func (*gin.Context)(err error){
+	expiration time.Duration, poolMaxSize, sessionInitSize int)func (*gin.Context){
 	pool := cache_pool.NewCachePool(poolMaxSize)
 	return func(ctx *gin.Context){
 		var data map[string]string
