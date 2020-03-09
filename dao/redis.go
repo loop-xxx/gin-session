@@ -11,12 +11,14 @@ type Redis struct {
 
 const magicField = string("magic")
 
-func DefaultRedis(addr,password string, db int) (r Redis, err error) {
-	client := redis.NewClient(redis.Options{
+func DefaultRedis(addr, password string, db int) (r Redis, err error) {
+	conf := redis.Options{
 		Addr:               addr,
 		Password:           password,
 		DB:                 db,
-	})
+	}
+	client := redis.NewClient(&conf)
+	
 	if _, err = client.Ping().Result(); err == nil {
 		r = Redis{
 			Client: client,
