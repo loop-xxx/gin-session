@@ -10,11 +10,11 @@ go get github.com/loop-xxx/gin-session
 
 ##### 架构
 
-![00](.\img\00.PNG)
+![00](./img/00.PNG)
 
 
 
-![image-20200309173547517](.\img\01.PNG)
+![image-20200309173547517](./img/01.PNG)
 
 ##### 流程
 
