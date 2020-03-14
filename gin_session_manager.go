@@ -25,7 +25,7 @@ func GinSessionManager(keeper dao.Keeper, domain string,
 	pool := cache.NewCachePool(poolMaxSize)
 	return func(ctx *gin.Context){
 		var data map[string]string
-		var ball *cache.CacheBall
+		var ball *cache.Ball
 
 		//1 获取请求携带的session
 		if token, err := ctx.Cookie("gin-session-id"); err == nil{

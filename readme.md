@@ -12,6 +12,66 @@ go get github.com/loop-xxx/gin-session
 ##### 架构
 ![00](./img/00.jpg)
 ![01](./img/01.jpg)
+
+##### lru算法实现
+
+```go
+type Pool struct{
+	//同步锁
+	rwm sync.RWMutex
+
+	//用于lru算法, 双向循环链表
+	lru  *cacheNode
+	//用于根据token找到对应cacheNode, hash表
+	hash map[string]*cacheNode
+
+	//cachePool的最大容量
+	maxSize int
+}
+
+func (cpp *Pool)SearchCacheBall(token string)(cacheBall *Ball, exist bool){
+	cpp.rwm.RLock()
+	defer cpp.rwm.RUnlock()
+
+	if cacheNode, ok := cpp.hash[token]; ok{ //通过hash表快速找到要访问的元素
+		//进入修改模式
+		cpp.rwm.RUnlock()
+		cpp.rwm.Lock()
+
+        //将被访问的元素提升到双向循环链表的队首
+		first(cpp.lru, cacheNode) 
+
+		//推出修改模式
+		cpp.rwm.Unlock()
+		cpp.rwm.RLock()
+
+		exist = true
+		cacheBall = cacheNode.core
+	}
+	return
+}
+
+
+func (cpp *Pool)AppendCacheBall(token string, cacheBall *Ball){
+	cpp.rwm.Lock()
+	defer cpp.rwm.Unlock()
+
+	if len(cpp.hash) >= cpp.maxSize{
+		//如果CachePool已经满了,则删除池中最不常用的cacheNode
+		delete(cpp.hash, cpp.lru.prev.token) //双向循环列表的队尾是最不常使用的元素
+		del(cpp.lru.prev)
+	}
+	cacheNode := &cacheNode{
+		token: token,
+		core:  cacheBall,
+	}
+	cpp.hash[token] = cacheNode
+	push(cpp.lru, cacheNode)
+}
+```
+
+
+
 ##### 流程
 
 ```go

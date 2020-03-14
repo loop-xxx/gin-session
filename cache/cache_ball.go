@@ -8,7 +8,7 @@ import (
 	"github.com/loop-xxx/gin-session/dao"
 )
 
-type CacheBall struct {
+type Ball struct {
 	//读写锁
 	rwm sync.RWMutex
 
@@ -25,7 +25,7 @@ type CacheBall struct {
 	dataMap map[string]string
 }
 
-func (cnp *CacheBall) _sync() (success bool) {
+func (cnp *Ball) _sync() (success bool) {
 	cnp.rwm.Lock()
 	defer cnp.rwm.Unlock()
 
@@ -48,7 +48,7 @@ func (cnp *CacheBall) _sync() (success bool) {
 	}
 	return
 }
-func (cnp *CacheBall) Sync() (success bool) {
+func (cnp *Ball) Sync() (success bool) {
 	//通过magic 检测Redis中的key有没有超时, Session缓存有没有过期
 	cnp.rwm.RLock()
 	status, err := cnp.keeper.Check(cnp.key, cnp.magic, cnp.expiration)
@@ -67,7 +67,7 @@ func (cnp *CacheBall) Sync() (success bool) {
 	return
 }
 
-func (cnp *CacheBall) Get() (dataMap map[string]string) {
+func (cnp *Ball) Get() (dataMap map[string]string) {
 	cnp.rwm.RLock()
 	defer cnp.rwm.RUnlock()
 
@@ -78,10 +78,9 @@ func (cnp *CacheBall) Get() (dataMap map[string]string) {
 	return dataMap
 }
 
-func (cnp *CacheBall) Commit(dataMap map[string]string) (success bool) {
+func (cnp *Ball) Commit(dataMap map[string]string) (success bool) {
 	//生成数据当前版本的magic
 	magicInt64 := time.Now().UnixNano()
-
 	magicBytes := [4]byte{}
 	magicBytes[3] = uint8(magicInt64 >> 18)
 	magicBytes[2] = uint8(magicInt64 >> 26)
@@ -106,8 +105,8 @@ func (cnp *CacheBall) Commit(dataMap map[string]string) (success bool) {
 	return
 }
 
-func MakeCacheBall(key string, keeper dao.Keeper, expiration time.Duration) (cacheBall *CacheBall) {
-	cacheBall = &CacheBall{
+func MakeCacheBall(key string, keeper dao.Keeper, expiration time.Duration) (cacheBall *Ball) {
+	cacheBall = &Ball{
 		rwm:        sync.RWMutex{},
 		keeper:     keeper,
 		expiration: expiration,

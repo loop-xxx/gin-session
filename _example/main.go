@@ -25,7 +25,6 @@ func main() {
 			ctx.String(http.StatusOK, "ok")
 		})
 
-
 		engine.GET("/show", func(ctx *gin.Context){
 			if s, ok := session.GetSession(ctx); ok {
 				if name , ok := s.Get("name"); ok{
