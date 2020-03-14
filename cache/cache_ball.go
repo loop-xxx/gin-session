@@ -1,10 +1,11 @@
 package cache
 
 import (
-	"github.com/loop-xxx/gin-session/dao"
 	"log"
 	"sync"
 	"time"
+
+	"github.com/loop-xxx/gin-session/dao"
 )
 
 type CacheBall struct {
@@ -24,7 +25,7 @@ type CacheBall struct {
 	dataMap map[string]string
 }
 
-func (cnp *CacheBall) _syncIn() (success bool) {
+func (cnp *CacheBall) _sync() (success bool) {
 	cnp.rwm.Lock()
 	defer cnp.rwm.Unlock()
 
@@ -58,7 +59,7 @@ func (cnp *CacheBall) Sync() (success bool) {
 		case dao.GinSessionOk:
 			success = true
 		case dao.GinSessionOld:
-			success = cnp._syncIn()
+			success = cnp._sync()
 		}
 	} else {
 		log.Printf("[cache-pool ERROR] %v\n", err)
@@ -77,20 +78,8 @@ func (cnp *CacheBall) Get() (dataMap map[string]string) {
 	return dataMap
 }
 
-func (cnp *CacheBall) _syncOut() (success bool) {
-	success = true
-	//提交数据到redis
-	if err := cnp.keeper.Push(cnp.key, cnp.magic, cnp.dataMap, cnp.expiration); err != nil {
-		success = false
-		// module层出错
-		log.Printf("[cache-pool ERROR] %v\n", err)
-	}
-	return
-}
-
 func (cnp *CacheBall) Commit(dataMap map[string]string) (success bool) {
 	//生成数据当前版本的magic
-
 	magicInt64 := time.Now().UnixNano()
 
 	magicBytes := [4]byte{}
@@ -98,20 +87,22 @@ func (cnp *CacheBall) Commit(dataMap map[string]string) (success bool) {
 	magicBytes[2] = uint8(magicInt64 >> 26)
 	magicBytes[1] = uint8(magicInt64 >> 34)
 	magicBytes[0] = uint8(magicInt64 >> 42)
-
 	magic := string(magicBytes[:])
+
+	//先push到数据库
+	success = true
+	if err := cnp.keeper.Push(cnp.key, magic, dataMap, cnp.expiration); err != nil {
+		success = false
+		// module层出错
+		log.Printf("[cache-pool ERROR] %v\n", err)
+	}
+
+	//再清除缓存
 	cnp.rwm.Lock()
 	defer cnp.rwm.Unlock()
+	cnp.magic = "none"
+	cnp.dataMap = nil
 
-	if cnp.dataMap == nil{
-		cnp.dataMap = make(map[string]string , len(dataMap))
-	}
-	cnp.magic = magic
-	for key, value := range dataMap {
-		cnp.dataMap[key] = value
-	}
-
-	success = cnp._syncOut()
 	return
 }
 

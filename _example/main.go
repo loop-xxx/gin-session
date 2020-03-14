@@ -17,10 +17,10 @@ func main() {
 		engine := gin.Default()
 		engine.Use(session.DefaultGinSessionManager(keeper, "localhost"))
 
-		engine.GET("/login", func(ctx *gin.Context){
+		engine.GET("/login/:first/:second", func(ctx *gin.Context){
 			if s, exist := session.GetSession(ctx); exist {
 				s.Set("name", "loop")
-				_= s.SetStruct("user", User{"li", "loop"})
+				_= s.SetStruct("user", User{ctx.Param("first"), ctx.Param("second")})
 			}
 			ctx.String(http.StatusOK, "ok")
 		})
